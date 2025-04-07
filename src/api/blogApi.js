@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = 'https://blogbackend-1-shd1.onrender.com/api/'
+    const baseUrl = 'https://blogbackend-1-shd1.onrender.com/api/'
 
 const createNewBlog = async (payload) => {
     const token = localStorage.getItem('token')

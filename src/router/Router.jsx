@@ -7,6 +7,7 @@ import EditArticleForm from '../pages/EditArticleForm'
 import NewArticleForm from '../pages/NewArticleForm'
 import SignUp from '../pages/SignUp'
 import About from '../pages/About'
+import VerifyEmail from '../pages/VerifyEmail'
 
 export default function Router() {
   return (
@@ -20,6 +21,8 @@ export default function Router() {
                 <Route path='/news_detail/edit/:id' element={<EditArticleForm/>} />
                 <Route path='/sign-in' element={<SignIn />} />
                 <Route path='/sign-up' element={<SignUp />} />
+                <Route path='/otpverification/:id' element={<VerifyEmail />} />
+                
             </Routes>
         </BrowserRouter>
     </div>

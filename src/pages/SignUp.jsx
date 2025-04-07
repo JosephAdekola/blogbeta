@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
+import { createUser, getOtpToBack } from '../api/userApi'
+
 
 export default function SignUp() {
 
@@ -10,28 +12,25 @@ export default function SignUp() {
     const [email, setEmail] = useState('')
     const [userName, setUserName] = useState('')
     const [password, setPassword] = useState('')
-    const [newUserDetails, setNewUserDetails] = useState({})
-    const [allUser, setAllUser] = useState([])
     const [requiredAlert, setRequiredAlert] = useState('')
     const [emailVerify, setEmailVerify] = useState('')
     const [useNameVerify, setUserNameVerify] = useState('')
-
-    useEffect(() => {
-        const fetchAllUser = async () => {
-            const res = await getAllUser();
-            setAllUser(res);
-        }
-        fetchAllUser()
-    }, [])
+    const [useridentity, setUserIdentity] = useState("")
+    const [userOtp, setUserOtp] = useState('')
+    // const [otpPanel, setOtpPanel] = useState(true)
+    
 
     const Navigate = useNavigate()
 
     const nameUpdater = (e) => {
         setName(e.target.value)
+        
     }
 
     const genderUpdater = (e) => {
         setGender(e.target.value)
+        console.log(gender);
+        
     }
 
     const emailUpdater = (e) => {
@@ -46,6 +45,10 @@ export default function SignUp() {
         setPassword(e.target.value)
     }
 
+    const otpUpdater = (e) => {
+        setUserOtp(e.target.value)
+    }
+
     const newUserAdder = async (e) => {
         e.preventDefault()
         const newUser = {
@@ -53,67 +56,87 @@ export default function SignUp() {
             email: email,
             username: userName,
             password: password,
-            gender: gender,
-            role: 'Subscriber'
+            gender: gender
         }
-        const emailFinder = allUser.findIndex((item) => item.email === newUser.email) !== -1
-        const UserNameFinder = allUser.findIndex((item) => item.username === newUser.username) !== -1
-
-
+        
         if (name.length < 1 || gender == '' || email.length < 1 || userName.length < 1 || password.length < 1) {
-            setRequiredAlert('All Feeds Are Required')
+            setRequiredAlert('All Feeds Are Required');
             return;
-        } else if (emailFinder) {
-            setEmailVerify('An Account With This Email Already exist');
-            return;
-
-        } else if (UserNameFinder) {
-            setUserNameVerify('Another User Already Chose This Username, please choose another one');
-            setEmailVerify('')
-            return;
-        } else {
-            try {
-                const response = await addNewsUser(newUser);
-                setNewUserDetails(response);
-                if (response) {
-                    setName('')
-                    setEmail('')
-                    setUserName('')
-                    setPassword('')
-                    setGender('')
-                    setUserNameVerify('')
-                    setEmailVerify('')
-                    alert('sign up Successful! you will now be redirected to sign in')
-                    Navigate('/sign-in')
-                } else {
-                    alert('unable to add new user')
-                }
-
-            }
-            catch (error) {
-                console.error('unable to fetch user', error)
+        } 
+        
+        try {
+            const response = await createUser(newUser);
+            
+            setUserIdentity(response.data.data.userID);
+            console.log(response.data.data.userID);
+            
+            if (response) {
+                setName('')
+                setEmail('')
+                setUserName('')
+                setPassword('')
+                setGender('')
+                setUserNameVerify('')
+                setEmailVerify('')
+                alert('sign up Successful! an otp has been sent to your email. you will now be redirected to verify your email by entering y')
+                setOtpPanel(true)
+                Navigate(`/otpverification/${useridentity}`)
+            } else {
+                alert('unable to add new user')
             }
 
+            
+
+        }
+        catch (error) {
+            console.error('unable to fetch user', error)
         }
 
     }
 
-        // console.log(name);
-        // console.log(gender);
-        // console.log(email);
-        // console.log(userName);
-        // console.log(password);
-        // console.log(allUser);
+    // const submitOTP = async () => {
+        
+    //     const payload = {
+    //         userID: useridentity,
+    //         otp: userOtp
+    //     }
 
+    //     try {
+    //         const response = await getOtpToBack(payload);
+            
+    //         console.log(response);
+    //         console.log(payload);
+            
+                    
+    //         // if (!response?.status !== 200) {
+    //         //     alert('could not verify otp')
+    //         //     return;
+    //         // }
 
+    //         alert('email verification successful, you will now be redirected to login');
+    //         setOtpPanel(false)
+    //         // Navigate('/sign-in')
 
-
-
-
-
+    //     } catch (error) {
+    //         console.log('unable to fetch user', error)
+    //     }
+    // }
         return (
             <div className='bg-gray-500 w-full min-h-[85vh] px-2 sm:px-[50px] '>
+                <div className=' relative '>
                 <Header />
+                </div>
+                {/* <div className={`absolute left-0 w-full h-[100vh] bg-amber-100 ${!otpPanel ? 'hidden' : 'flex'} justify-center`}>
+                    <div className=' my-auto '>
+                    <h3>verify your email</h3>
+                    <p>please enter your otp below</p>
+                    <input type="text" placeholder='enter yourotp here'
+                            onChange={(e) => otpUpdater(e)} />
+                    <button onClick={submitOTP}>
+                        SUBMIT
+                    </button>
+                    </div>
+                </div> */}
                 <div className=' max-w-[400px] py-20 mx-auto '>
                     <form className='w-full flex flex-col gap-3 text-white ' action="">
                         <div className=' w-full mx-auto '> 
