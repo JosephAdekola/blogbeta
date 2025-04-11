@@ -49,50 +49,50 @@ export default function SignUp() {
         setUserOtp(e.target.value)
     }
 
-    const newUserAdder = async (e) => {
-        e.preventDefault()
-        const newUser = {
-            name: name,
-            email: email,
-            username: userName,
-            password: password,
-            gender: gender
-        }
+    // const newUserAdder = async (e) => {
+    //     e.preventDefault()
+    //     const newUser = {
+    //         name: name,
+    //         email: email,
+    //         username: userName,
+    //         password: password,
+    //         gender: gender
+    //     }
         
-        if (name.length < 1 || gender == '' || email.length < 1 || userName.length < 1 || password.length < 1) {
-            setRequiredAlert('All Feeds Are Required');
-            return;
-        } 
+    //     if (name.length < 1 || gender == '' || email.length < 1 || userName.length < 1 || password.length < 1) {
+    //         setRequiredAlert('All Feeds Are Required');
+    //         return;
+    //     } 
         
-        try {
-            const response = await createUser(newUser);
+    //     try {
+    //         const response = await createUser(newUser);
             
-            setUserIdentity(response.data.data.userID);
-            console.log(response.data.data.userID);
+    //         // setUserIdentity(response.data.data.userID);
+    //         // console.log(response.data.data.userID);
             
-            if (response) {
-                setName('')
-                setEmail('')
-                setUserName('')
-                setPassword('')
-                setGender('')
-                setUserNameVerify('')
-                setEmailVerify('')
-                alert('sign up Successful! an otp has been sent to your email. you will now be redirected to verify your email by entering y')
-                setOtpPanel(true)
-                Navigate(`/otpverification/${useridentity}`)
-            } else {
-                alert('unable to add new user')
-            }
+    //         if (response) {
+    //             setName('')
+    //             setEmail('')
+    //             setUserName('')
+    //             setPassword('')
+    //             setGender('')
+    //             setUserNameVerify('')
+    //             setEmailVerify('')
+    //             alert('sign up Successful! an otp has been sent to your email. you will now be redirected to verify your email by entering y')
+    //             setOtpPanel(true)
+    //             Navigate(`/otpverification/${useridentity}`)
+    //         } else {
+    //             alert('unable to add new user')
+    //         }
 
             
 
-        }
-        catch (error) {
-            console.error('unable to fetch user', error)
-        }
+    //     }
+    //     catch (error) {
+    //         console.error('unable to fetch user', error)
+    //     }
 
-    }
+    // }
 
     // const submitOTP = async () => {
         
@@ -121,6 +121,44 @@ export default function SignUp() {
     //         console.log('unable to fetch user', error)
     //     }
     // }
+
+    const newUserAdder = async (e) => {
+        e.preventDefault();
+    
+        const newUser = { name, email, username: userName, password, gender };
+    
+        if (!name || !gender || !email || !userName || !password) {
+            setRequiredAlert('All fields are required');
+            return;
+        }
+    
+        try {
+            const response = await createUser(newUser);
+            const userID = response.userID || response.data?.userID || response._id;
+    
+            if (userID) {
+                setUserIdentity(userID);
+                setName('');
+                setEmail('');
+                setUserName('');
+                setPassword('');
+                setGender('');
+                setUserNameVerify('');
+                setEmailVerify('');
+    
+                alert('Sign up successful! An OTP has been sent to your email.');
+                setOtpPanel(true);
+                Navigate(`/otpverification/${userID}`);
+            } else {
+                alert('Unable to add new user');
+            }
+    
+        } catch (error) {
+            console.error('Unable to create user:', error.response?.data || error.message);
+            setRequiredAlert(error.response?.data?.msg || 'Something went wrong while signing up');
+        }
+    };
+    
         return (
             <div className='bg-gray-500 w-full min-h-[85vh] px-2 sm:px-[50px] '>
                 <div className=' relative '>
